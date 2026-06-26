@@ -6,3 +6,7 @@ _metadata/
 
 # Editor / harness
 .claude/
+
+# Web Store build output
+dist/
+*.zip
