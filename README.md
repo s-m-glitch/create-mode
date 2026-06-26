@@ -40,18 +40,25 @@ create-mode/
 └── README.md        this file
 ```
 
-## Load it (unpacked)
+## Try it now (load unpacked)
 
-1. Open `chrome://extensions` in Chrome (or any Chromium browser — Edge, Brave,
-   Arc).
-2. Toggle **Developer mode** on (top-right).
-3. Click **Load unpacked**.
-4. Select this `create-mode/` folder.
-5. The extension is live, but **dormant** until you commit. Pin it from the
-   puzzle-piece menu if you like — clicking its toolbar icon opens the Create
-   Hub anytime.
-6. Click the toolbar icon, pick a duration (1 day / 1 week / 2 weeks / 1 month),
-   and confirm. The feed is now blocked until that date.
+Not on the Chrome Web Store yet — install it directly:
+
+1. **Get the files:** click the green **Code** button on this repo → **Download
+   ZIP**, then unzip it somewhere you'll keep (Chrome loads it from that folder,
+   so don't delete it). Or `git clone` the repo.
+2. Open `chrome://extensions` (Chrome, Edge, Brave, or Arc).
+3. Toggle **Developer mode** on (top-right).
+4. Click **Load unpacked** → select the unzipped **create-mode** folder.
+5. Click the new ↗ toolbar icon to open the Create Hub. Pin it from the
+   puzzle-piece menu if you like.
+6. Pick a duration and confirm — the feed is now blocked until then.
+
+> **Just testing?** Use the **5 min** option so you don't lock your real feed
+> for a month. The "pay to break" flow currently runs in **Stripe test mode** —
+> no real charges; use card `4242 4242 4242 4242`, or just wait out the 5-min
+> lock. Chrome will nag about "developer-mode extensions" — harmless, and it
+> goes away once it's on the Web Store.
 
 To verify: with a block live, go to `https://www.linkedin.com/feed/` and
 `/notifications/` — both should land on the Create Hub. Then confirm
