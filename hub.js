@@ -19,7 +19,7 @@ $("messages").addEventListener("click", () => (location.href = ROUTES.messages))
 // ── Block commitment ──
 const DAY = 86_400_000;
 const DURATIONS = [
-  { label: "5 min", ms: 5 * 60_000, price: 1 }, // TEMP: test option — remove before real use
+  { label: "5 min", ms: 5 * 60_000, price: 5 }, // TEMP: test option (reuses the $5 link) — remove before real use
   { label: "1 day", ms: 1 * DAY, price: 5 },
   { label: "1 week", ms: 7 * DAY, price: 10 },
   { label: "2 weeks", ms: 14 * DAY, price: 25 },
@@ -30,7 +30,7 @@ const DURATIONS = [
 // While API_BASE is empty we run in MOCK mode: a fake checkout page marks the
 // payment "paid" so the flow is clickable without a backend. Set API_BASE to
 // the deployed backend to go live — the Payment Links below are already wired.
-const API_BASE = ""; // e.g. "https://create-mode-api.vercel.app/api"
+const API_BASE = "https://create-mode-api.vercel.app/api";
 
 // Stripe Payment Links, keyed by break price (USD). TEST-mode links — swap for
 // live-mode links before taking real money.

@@ -60,8 +60,8 @@ zip -q dist/create-mode.zip manifest.json background.js content.js feed-guard.js
 >
 > • Blocks the home feed and notifications
 > • Keeps posting, the composer, messaging, and profiles working
-> • Timed commitments with no early exit
-> • Stores nothing but a local timestamp — no account, no tracking, no servers
+> • Timed commitments — break early only by paying a stake you set
+> • No account, no tracking, no analytics
 >
 > Thesis: create, not consume.
 
@@ -84,18 +84,25 @@ zip -q dist/create-mode.zip manifest.json background.js content.js feed-guard.js
   committed period expires.
 - **Host permission `*://*.linkedin.com/*`** — Needed to redirect feed/
   notifications requests on linkedin.com, hide the feed behind the post composer,
-  and redirect already-open LinkedIn tabs when a block begins. The extension runs
-  only on linkedin.com.
+  and redirect already-open LinkedIn tabs when a block begins.
+- **Host permission `https://create-mode-api.vercel.app/*`** — Used only when a
+  user chooses to pay to break a lock early: the extension checks our own
+  endpoint whether that payment cleared.
 
 ## Privacy / data use answers
 
-- **Does this item collect user data?** No.
-- **Data sold/transferred?** No. Nothing leaves the device.
+- **Does this item collect user data?** No personal data.
+- **Data sold/transferred?** No.
 - **What it stores:** one local timestamp (`blockUntil`) in `chrome.storage.local`.
-  No account, no analytics, no remote servers.
-- **Remote code?** No executable remote code. The Create Hub page loads the
+  No account, no analytics.
+- **Network:** none during normal use. Only when a user chooses to **pay to break
+  a lock**, the extension (a) opens Stripe's hosted checkout and (b) polls our
+  backend with a random, anonymous id to learn whether that payment cleared.
+  Payment is handled entirely by Stripe; card data never touches the extension.
+  No personal data is sent to our backend.
+- **Remote code?** No executable remote code. The Create Hub also loads the
   Switzer **web font** from Fontshare (a font resource, not code). If you prefer
-  zero external requests, the font can be bundled locally instead — see below.
+  to remove that external request, the font can be bundled locally — see below.
 
 ---
 

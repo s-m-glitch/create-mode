@@ -16,7 +16,8 @@
     "alarms"
   ],
   "host_permissions": [
-    "*://*.linkedin.com/*"
+    "*://*.linkedin.com/*",
+    "https://create-mode-api.vercel.app/*"
   ],
 
   "background": {
