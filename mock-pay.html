@@ -10,36 +10,35 @@
     />
     <style>
       :root {
-        --bg:#080b16; --on:#eef1f7; --dim:rgba(238,241,247,.6); --line:rgba(238,241,247,.1);
-        --teal:#5fe7d2; --teal-bright:#86f4e2; --teal-glow:rgba(95,231,210,.35);
+        --ink:#11151e; --dim:rgba(17,21,30,.66); --yellow:#ecf23f; --yellow-deep:#dde22f;
       }
       * { box-sizing: border-box; margin: 0; }
       body {
-        min-height: 100vh; color: var(--on);
+        min-height: 100vh; color: var(--ink);
         background:
-          radial-gradient(820px 560px at 50% -12%, rgba(95,231,210,.12), transparent 60%),
-          radial-gradient(680px 520px at 86% 8%, rgba(96,132,255,.12), transparent 55%),
-          var(--bg);
+          radial-gradient(680px 320px at 73% 24%, rgba(255,255,255,.6), transparent 62%),
+          radial-gradient(900px 240px at 50% 118%, rgba(120,200,130,.55), transparent 60%),
+          linear-gradient(180deg, #7eb7e8 0%, #b4dcf4 54%, #dcecf7 100%);
+        background-attachment: fixed;
         font-family: "Switzer", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
         -webkit-font-smoothing: antialiased; display: grid; place-items: center; padding: 32px;
       }
       .card { width: 100%; max-width: 380px; text-align: center; }
       .tag {
-        font-size: 10.5px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
+        font-size: 10.5px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
         color: var(--dim);
       }
-      .amount { font-size: 44px; font-weight: 500; letter-spacing: -.02em; margin: 14px 0 6px; }
-      .desc { font-size: 14px; color: var(--dim); margin-bottom: 32px; line-height: 1.5; }
+      .amount { font-size: 44px; font-weight: 800; letter-spacing: -.03em; margin: 14px 0 6px; }
+      .desc { font-size: 14px; color: var(--dim); margin-bottom: 32px; line-height: 1.5; font-weight: 500; }
       button {
-        width: 100%; padding: 14px; border: 0; border-radius: 11px; cursor: pointer;
-        font-family: inherit; font-size: 14px; font-weight: 600; color: #06241f;
-        background: linear-gradient(180deg, var(--teal-bright), var(--teal));
-        box-shadow: 0 6px 22px -8px var(--teal-glow); transition: filter .18s ease;
+        width: 100%; padding: 14px; border: 0; border-radius: 12px; cursor: pointer;
+        font-family: inherit; font-size: 14px; font-weight: 700; color: var(--ink);
+        background: var(--yellow); transition: background .18s ease;
       }
-      button:hover { filter: brightness(1.05); }
+      button:hover { background: var(--yellow-deep); }
       .done { display: none; }
       .done .amount { font-size: 26px; }
-      .muted { font-size: 12.5px; color: var(--dim); margin-top: 18px; line-height: 1.5; }
+      .muted { font-size: 12.5px; color: var(--dim); margin-top: 18px; line-height: 1.5; font-weight: 500; }
     </style>
   </head>
   <body>

@@ -1,27 +1,29 @@
-/* hub.css — Create Hub, tomo.ai-inspired: deep navy, dreamy gradient glow,
-   a signature teal orb, soft floating cards, lowercase headline. */
+/* hub.css — Create Hub, tomo.ai-inspired: bright daytime sky, soft clouds,
+   frosted-glass cards, heavy black headline, lemon-yellow CTAs. */
 
 :root {
-  --bg: #080b16; /* deep navy-black */
-  --text: #eef1f7;
-  --dim: rgba(238, 241, 247, 0.62);
-  --faint: rgba(238, 241, 247, 0.42);
-  --mute: rgba(238, 241, 247, 0.26);
-  --line: rgba(238, 241, 247, 0.1);
-  --line-2: rgba(238, 241, 247, 0.18);
-  --surface: rgba(255, 255, 255, 0.035);
-  --surface-2: rgba(255, 255, 255, 0.07);
+  --sky-1: #7eb7e8; /* upper sky */
+  --sky-2: #b4dcf4;
+  --sky-3: #dcecf7; /* pale horizon */
 
-  --teal: #5fe7d2;
-  --teal-bright: #86f4e2;
-  --teal-deep: #2bbfa8;
-  --teal-soft: rgba(95, 231, 210, 0.16);
-  --teal-line: rgba(95, 231, 210, 0.32);
-  --teal-glow: rgba(95, 231, 210, 0.35);
+  --ink: #11151e;
+  --ink-dim: rgba(17, 21, 30, 0.66);
+  --ink-faint: rgba(17, 21, 30, 0.46);
+  --ink-mute: rgba(17, 21, 30, 0.3);
+  --line: rgba(17, 21, 30, 0.12);
+
+  --yellow: #ecf23f;
+  --yellow-deep: #dde22f;
+  --green: #46c779;
+
+  --card: rgba(255, 255, 255, 0.5);
+  --card-2: rgba(255, 255, 255, 0.68);
+  --card-border: rgba(255, 255, 255, 0.78);
+  --shadow: 0 14px 34px -18px rgba(20, 45, 80, 0.45);
 
   --sans: "Switzer", system-ui, -apple-system, "Helvetica Neue", Arial,
     sans-serif;
-  --r: 18px;
+  --r: 20px;
 }
 
 * {
@@ -36,13 +38,14 @@ body {
 }
 
 body {
-  /* Dreamy layered glow — teal from above, a cool indigo wash off to the side. */
+  /* Bright sky with soft clouds and a hint of green ground below. */
   background:
-    radial-gradient(820px 560px at 50% -12%, rgba(95, 231, 210, 0.12), transparent 60%),
-    radial-gradient(680px 520px at 86% 8%, rgba(96, 132, 255, 0.12), transparent 55%),
-    radial-gradient(720px 600px at 12% 108%, rgba(120, 90, 230, 0.1), transparent 55%),
-    var(--bg);
-  color: var(--text);
+    radial-gradient(680px 320px at 73% 24%, rgba(255, 255, 255, 0.6), transparent 62%),
+    radial-gradient(560px 280px at 15% 60%, rgba(255, 255, 255, 0.5), transparent 60%),
+    radial-gradient(900px 240px at 50% 118%, rgba(120, 200, 130, 0.55), transparent 60%),
+    linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 54%, var(--sky-3) 100%);
+  background-attachment: fixed;
+  color: var(--ink);
   font-family: var(--sans);
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
@@ -55,10 +58,10 @@ body {
 .label {
   font-family: var(--sans);
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--ink-faint);
 }
 
 .hub {
@@ -70,41 +73,16 @@ body {
 }
 
 /* ── Header ── */
-.hub__head {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-/* Signature glowing orb. */
-.orb {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 34% 30%,
-    var(--teal-bright),
-    var(--teal) 46%,
-    var(--teal-deep) 78%
-  );
-  box-shadow:
-    0 0 0 1px rgba(134, 244, 226, 0.25),
-    0 8px 28px var(--teal-glow),
-    0 0 60px var(--teal-glow);
-  animation: float 6s ease-in-out infinite;
-}
-
 .hub__thesis {
-  font-weight: 500;
-  font-size: clamp(28px, 8.6vw, 43px);
-  line-height: 1.02;
-  letter-spacing: -0.025em;
-  text-transform: lowercase;
+  font-weight: 800;
+  font-size: clamp(26px, 7.8vw, 38px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   white-space: nowrap;
-  color: var(--text);
+  color: var(--ink);
 }
 
-/* ── Action cards (soft, floating, separated) ── */
+/* ── Frosted action cards ── */
 .actions {
   display: flex;
   flex-direction: column;
@@ -116,29 +94,29 @@ body {
   cursor: pointer;
   width: 100%;
   text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--card);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--card-border);
   border-radius: var(--r);
-  color: var(--text);
+  color: var(--ink);
   font-family: var(--sans);
   padding: 20px 22px;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   column-gap: 16px;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .row:hover {
-  background: var(--surface-2);
-  border-color: var(--teal-line);
+  background: var(--card-2);
   transform: translateY(-1px);
-  box-shadow: 0 10px 30px -16px var(--teal-glow);
+  box-shadow: var(--shadow);
 }
 
 .row:focus-visible {
-  outline: 2px solid var(--teal);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
 
@@ -151,23 +129,24 @@ body {
 
 .row__title {
   font-size: 17px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 .row__sub {
   font-size: 13.5px;
-  color: var(--faint);
+  color: var(--ink-faint);
+  font-weight: 500;
 }
 
 .row__arrow {
   font-size: 16px;
-  color: var(--mute);
+  color: var(--ink-mute);
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .row:hover .row__arrow {
-  color: var(--teal);
+  color: var(--ink);
   transform: translate(2px, -2px);
 }
 
@@ -190,7 +169,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--faint);
+  color: var(--ink-faint);
 }
 
 .commit__state::before {
@@ -198,24 +177,23 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--mute);
+  background: var(--ink-mute);
 }
 
 .commit.is-blocked .commit__state {
-  color: var(--teal);
+  color: var(--ink);
 }
 
 .commit.is-blocked .commit__state::before {
-  background: var(--teal);
-  box-shadow: 0 0 10px var(--teal-glow);
+  background: var(--green);
+  box-shadow: 0 0 9px rgba(70, 199, 121, 0.7);
 }
 
 .commit__headline {
-  font-weight: 500;
+  font-weight: 800;
   font-size: 30px;
-  letter-spacing: -0.02em;
-  text-transform: lowercase;
-  color: var(--text);
+  letter-spacing: -0.025em;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -226,18 +204,20 @@ body {
 .commit__sub {
   font-size: 14px;
   line-height: 1.55;
-  color: var(--dim);
-  font-weight: 400;
+  color: var(--ink-dim);
+  font-weight: 500;
 }
 
 /* Segmented control. */
 .seg {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: 1px solid var(--line);
+  border: 1px solid var(--card-border);
   border-radius: 14px;
   overflow: hidden;
-  background: var(--surface);
+  background: var(--card);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
 }
 
 .seg[hidden] {
@@ -251,11 +231,11 @@ body {
   border: 0;
   border-left: 1px solid var(--line);
   padding: 14px 4px;
-  color: var(--dim);
+  color: var(--ink-dim);
   font-family: var(--sans);
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   transition: background 0.16s ease, color 0.16s ease;
 }
@@ -265,42 +245,18 @@ body {
 }
 
 .seg__btn:hover {
-  background: var(--surface-2);
-  color: var(--text);
+  background: var(--card-2);
+  color: var(--ink);
 }
 
 .seg__btn:focus-visible {
-  outline: 2px solid var(--teal);
+  outline: 2px solid var(--ink);
   outline-offset: -2px;
 }
 
 .seg__btn.is-pending {
-  background: linear-gradient(180deg, var(--teal-bright), var(--teal));
-  color: #06241f;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-/* Primary action style (teal glow pill). */
-.btn-primary {
-  cursor: pointer;
-  border: 0;
-  border-radius: 10px;
-  background: linear-gradient(180deg, var(--teal-bright), var(--teal));
-  color: #06241f;
-  font-family: var(--sans);
-  font-weight: 600;
-  box-shadow: 0 6px 22px -8px var(--teal-glow);
-  transition: filter 0.18s ease, box-shadow 0.18s ease;
-}
-
-.btn-primary:hover {
-  filter: brightness(1.05);
-  box-shadow: 0 8px 26px -8px var(--teal-glow);
-}
-
-.btn-primary:focus-visible {
-  outline: 2px solid var(--teal);
-  outline-offset: 3px;
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 /* Commit confirm. */
@@ -310,8 +266,10 @@ body {
   justify-content: space-between;
   gap: 14px;
   padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--card);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--card-border);
   border-radius: 14px;
 }
 
@@ -322,36 +280,40 @@ body {
 .confirm__text {
   font-size: 14px;
   line-height: 1.45;
-  color: var(--dim);
-  font-weight: 400;
+  color: var(--ink-dim);
+  font-weight: 500;
 }
 
 .confirm__text strong {
-  color: var(--text);
-  font-weight: 600;
+  color: var(--ink);
+  font-weight: 700;
 }
 
+/* Bright lemon CTA — the tomo button. */
 .confirm__go {
   flex: none;
   padding: 11px 18px;
   font-size: 12px;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   cursor: pointer;
   border: 0;
-  border-radius: 10px;
-  background: linear-gradient(180deg, var(--teal-bright), var(--teal));
-  color: #06241f;
-  font-weight: 600;
-  box-shadow: 0 6px 22px -8px var(--teal-glow);
-  transition: filter 0.18s ease;
+  border-radius: 11px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 700;
+  transition: background 0.18s ease, transform 0.12s ease;
 }
 
 .confirm__go:hover {
-  filter: brightness(1.05);
+  background: var(--yellow-deep);
+}
+
+.confirm__go:active {
+  transform: translateY(1px);
 }
 
 .confirm__go:focus-visible {
-  outline: 2px solid var(--teal);
+  outline: 2px solid var(--ink);
   outline-offset: 3px;
 }
 
@@ -366,14 +328,14 @@ body {
   text-align: left;
   font-family: var(--sans);
   font-size: 12.5px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.5;
-  color: var(--mute);
+  color: var(--ink-mute);
   transition: color 0.18s ease;
 }
 
 .breaklink:hover {
-  color: var(--faint);
+  color: var(--ink-faint);
 }
 
 .breaklink[hidden] {
@@ -385,8 +347,10 @@ body {
   flex-direction: column;
   gap: 12px;
   padding: 20px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--card);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--card-border);
   border-radius: var(--r);
 }
 
@@ -396,17 +360,16 @@ body {
 
 .breakbox__title {
   font-size: 21px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
-  color: var(--text);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
 .breakbox__body {
   font-size: 13.5px;
   line-height: 1.55;
-  color: var(--dim);
-  font-weight: 400;
+  color: var(--ink-dim);
+  font-weight: 500;
 }
 
 .breakbox__actions {
@@ -415,24 +378,23 @@ body {
   margin-top: 2px;
 }
 
-/* "Stay locked" is the prominent, recommended (teal) choice. */
+/* "Stay locked" is the prominent (yellow) choice. */
 .breakbox__stay {
   cursor: pointer;
   flex: 1;
   padding: 12px 16px;
   border: 0;
-  border-radius: 11px;
-  background: linear-gradient(180deg, var(--teal-bright), var(--teal));
-  color: #06241f;
+  border-radius: 12px;
+  background: var(--yellow);
+  color: var(--ink);
   font-family: var(--sans);
   font-size: 13.5px;
-  font-weight: 600;
-  box-shadow: 0 6px 22px -8px var(--teal-glow);
-  transition: filter 0.18s ease;
+  font-weight: 700;
+  transition: background 0.18s ease;
 }
 
 .breakbox__stay:hover {
-  filter: brightness(1.05);
+  background: var(--yellow-deep);
 }
 
 /* Paying is intentionally understated — we don't sell the exit. */
@@ -441,23 +403,23 @@ body {
   flex: none;
   padding: 12px 16px;
   background: transparent;
-  color: var(--faint);
+  color: var(--ink-faint);
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: 12px;
   font-family: var(--sans);
   font-size: 13px;
-  font-weight: 400;
+  font-weight: 500;
   transition: color 0.18s ease, border-color 0.18s ease;
 }
 
 .breakbox__pay:hover {
-  color: var(--dim);
-  border-color: var(--line-2);
+  color: var(--ink-dim);
+  border-color: var(--ink-mute);
 }
 
 .breakbox__stay:focus-visible,
 .breakbox__pay:focus-visible {
-  outline: 2px solid var(--teal);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
 
@@ -467,8 +429,10 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--card);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--card-border);
   border-radius: 14px;
 }
 
@@ -479,8 +443,8 @@ body {
 .awaiting__text {
   font-size: 13px;
   line-height: 1.45;
-  color: var(--dim);
-  font-weight: 400;
+  color: var(--ink-dim);
+  font-weight: 500;
 }
 
 .awaiting__cancel {
@@ -491,27 +455,17 @@ body {
   padding: 4px;
   font-family: var(--sans);
   font-size: 12.5px;
-  color: var(--mute);
+  color: var(--ink-mute);
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: color 0.18s ease;
 }
 
 .awaiting__cancel:hover {
-  color: var(--text);
+  color: var(--ink);
 }
 
 /* ── Motion ── */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
 @keyframes rise {
   from {
     opacity: 0;
@@ -541,8 +495,7 @@ body {
   *,
   .hub__head,
   .actions,
-  .commit,
-  .orb {
+  .commit {
     animation: none !important;
     transition: none !important;
   }
