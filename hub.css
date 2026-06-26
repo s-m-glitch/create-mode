@@ -1,21 +1,27 @@
-/* hub.css — the Create Hub. Built on the freeks type system:
-   Switzer everywhere, warm monochrome, light-weight headlines. */
+/* hub.css — Create Hub, tomo.ai-inspired: deep navy, dreamy gradient glow,
+   a signature teal orb, soft floating cards, lowercase headline. */
 
 :root {
-  /* freeks tokens (freeks.vercel.app) */
-  --bg: #100f0d; /* warm near-black */
-  --on: #ece8df; /* warm bone */
-  --dim: rgba(236, 232, 223, 0.74);
-  --faint: rgba(236, 232, 223, 0.52);
-  --mute: rgba(236, 232, 223, 0.38);
-  --line: rgba(236, 232, 223, 0.16);
-  --line-2: rgba(236, 232, 223, 0.28);
-  --panel: rgba(236, 232, 223, 0.025);
-  --panel-2: rgba(236, 232, 223, 0.06);
+  --bg: #080b16; /* deep navy-black */
+  --text: #eef1f7;
+  --dim: rgba(238, 241, 247, 0.62);
+  --faint: rgba(238, 241, 247, 0.42);
+  --mute: rgba(238, 241, 247, 0.26);
+  --line: rgba(238, 241, 247, 0.1);
+  --line-2: rgba(238, 241, 247, 0.18);
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-2: rgba(255, 255, 255, 0.07);
+
+  --teal: #5fe7d2;
+  --teal-bright: #86f4e2;
+  --teal-deep: #2bbfa8;
+  --teal-soft: rgba(95, 231, 210, 0.16);
+  --teal-line: rgba(95, 231, 210, 0.32);
+  --teal-glow: rgba(95, 231, 210, 0.35);
 
   --sans: "Switzer", system-ui, -apple-system, "Helvetica Neue", Arial,
     sans-serif;
-  --r: 14px;
+  --r: 18px;
 }
 
 * {
@@ -30,8 +36,13 @@ body {
 }
 
 body {
-  background: var(--bg);
-  color: var(--on);
+  /* Dreamy layered glow — teal from above, a cool indigo wash off to the side. */
+  background:
+    radial-gradient(820px 560px at 50% -12%, rgba(95, 231, 210, 0.12), transparent 60%),
+    radial-gradient(680px 520px at 86% 8%, rgba(96, 132, 255, 0.12), transparent 55%),
+    radial-gradient(720px 600px at 12% 108%, rgba(120, 90, 230, 0.1), transparent 55%),
+    var(--bg);
+  color: var(--text);
   font-family: var(--sans);
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
@@ -41,12 +52,11 @@ body {
   padding: 48px 24px;
 }
 
-/* Tracked micro-label — Switzer, not monospace. */
 .label {
   font-family: var(--sans);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--faint);
 }
@@ -56,26 +66,49 @@ body {
   max-width: 460px;
   display: flex;
   flex-direction: column;
-  gap: 44px;
+  gap: 40px;
 }
 
 /* ── Header ── */
-.hub__thesis {
-  margin: 0;
-  font-weight: 300;
-  font-size: clamp(27px, 8.4vw, 41px);
-  line-height: 1.04;
-  letter-spacing: -0.025em;
-  white-space: nowrap; /* one line, always */
-  color: var(--on);
+.hub__head {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
-/* ── Action list ── */
+/* Signature glowing orb. */
+.orb {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 34% 30%,
+    var(--teal-bright),
+    var(--teal) 46%,
+    var(--teal-deep) 78%
+  );
+  box-shadow:
+    0 0 0 1px rgba(134, 244, 226, 0.25),
+    0 8px 28px var(--teal-glow),
+    0 0 60px var(--teal-glow);
+  animation: float 6s ease-in-out infinite;
+}
+
+.hub__thesis {
+  font-weight: 500;
+  font-size: clamp(28px, 8.6vw, 43px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-transform: lowercase;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+/* ── Action cards (soft, floating, separated) ── */
 .actions {
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: var(--panel);
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .row {
@@ -83,30 +116,30 @@ body {
   cursor: pointer;
   width: 100%;
   text-align: left;
-  background: transparent;
-  border: 0;
-  border-top: 1px solid var(--line);
-  color: var(--on);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: var(--text);
   font-family: var(--sans);
-  padding: 21px 22px;
+  padding: 20px 22px;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   column-gap: 16px;
-  transition: background 0.2s ease;
-}
-
-.row:first-child {
-  border-top: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .row:hover {
-  background: var(--panel-2);
+  background: var(--surface-2);
+  border-color: var(--teal-line);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px -16px var(--teal-glow);
 }
 
 .row:focus-visible {
-  outline: 1px solid var(--line-2);
-  outline-offset: -1px;
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
 }
 
 .row__body {
@@ -118,7 +151,7 @@ body {
 
 .row__title {
   font-size: 17px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 
@@ -128,14 +161,13 @@ body {
 }
 
 .row__arrow {
-  align-self: center;
   font-size: 16px;
   color: var(--mute);
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .row:hover .row__arrow {
-  color: var(--on);
+  color: var(--teal);
   transform: translate(2px, -2px);
 }
 
@@ -163,25 +195,27 @@ body {
 
 .commit__state::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--mute);
 }
 
 .commit.is-blocked .commit__state {
-  color: var(--on);
+  color: var(--teal);
 }
 
 .commit.is-blocked .commit__state::before {
-  background: var(--on);
+  background: var(--teal);
+  box-shadow: 0 0 10px var(--teal-glow);
 }
 
 .commit__headline {
-  font-weight: 300;
+  font-weight: 500;
   font-size: 30px;
   letter-spacing: -0.02em;
-  color: var(--on);
+  text-transform: lowercase;
+  color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -193,16 +227,17 @@ body {
   font-size: 14px;
   line-height: 1.55;
   color: var(--dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
-/* Segmented control — joined cells, hairline dividers, invert on pick. */
+/* Segmented control. */
 .seg {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: 1px solid var(--line-2);
-  border-radius: 11px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
   overflow: hidden;
+  background: var(--surface);
 }
 
 .seg[hidden] {
@@ -220,9 +255,9 @@ body {
   font-family: var(--sans);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  transition: background 0.18s ease, color 0.18s ease;
+  transition: background 0.16s ease, color 0.16s ease;
 }
 
 .seg__btn:first-child {
@@ -230,30 +265,54 @@ body {
 }
 
 .seg__btn:hover {
-  background: var(--panel-2);
-  color: var(--on);
+  background: var(--surface-2);
+  color: var(--text);
 }
 
 .seg__btn:focus-visible {
-  outline: 1px solid var(--line-2);
-  outline-offset: -1px;
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
 }
 
 .seg__btn.is-pending {
-  background: var(--on);
-  color: var(--bg);
+  background: linear-gradient(180deg, var(--teal-bright), var(--teal));
+  color: #06241f;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-/* Confirm — deliberate friction before a no-undo commitment. */
+/* Primary action style (teal glow pill). */
+.btn-primary {
+  cursor: pointer;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--teal-bright), var(--teal));
+  color: #06241f;
+  font-family: var(--sans);
+  font-weight: 600;
+  box-shadow: 0 6px 22px -8px var(--teal-glow);
+  transition: filter 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 8px 26px -8px var(--teal-glow);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+/* Commit confirm. */
 .confirm {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
   padding: 14px 16px;
-  background: var(--panel);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: 14px;
 }
 
 .confirm[hidden] {
@@ -264,36 +323,39 @@ body {
   font-size: 14px;
   line-height: 1.45;
   color: var(--dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .confirm__text strong {
-  color: var(--on);
-  font-weight: 500;
+  color: var(--text);
+  font-weight: 600;
 }
 
 .confirm__go {
-  cursor: pointer;
   flex: none;
-  padding: 11px 17px;
-  background: var(--on);
-  color: var(--bg);
+  padding: 11px 18px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
   border: 0;
-  border-radius: 8px;
-  color: var(--bg);
-  transition: opacity 0.18s ease;
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--teal-bright), var(--teal));
+  color: #06241f;
+  font-weight: 600;
+  box-shadow: 0 6px 22px -8px var(--teal-glow);
+  transition: filter 0.18s ease;
 }
 
 .confirm__go:hover {
-  opacity: 0.85;
+  filter: brightness(1.05);
 }
 
 .confirm__go:focus-visible {
-  outline: 2px solid var(--on);
+  outline: 2px solid var(--teal);
   outline-offset: 3px;
 }
 
-/* ── Break the lock (deliberately quiet + discouraging) ── */
+/* ── Break the lock (quiet + discouraging) ── */
 .breaklink {
   appearance: none;
   cursor: pointer;
@@ -304,7 +366,7 @@ body {
   text-align: left;
   font-family: var(--sans);
   font-size: 12.5px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.5;
   color: var(--mute);
   transition: color 0.18s ease;
@@ -322,10 +384,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 18px;
-  background: var(--panel);
+  padding: 20px;
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: var(--r);
 }
 
 .breakbox[hidden] {
@@ -333,19 +395,18 @@ body {
 }
 
 .breakbox__title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 300;
+  font-size: 21px;
+  font-weight: 500;
   letter-spacing: -0.01em;
-  color: var(--on);
+  text-transform: lowercase;
+  color: var(--text);
 }
 
 .breakbox__body {
-  margin: 0;
   font-size: 13.5px;
   line-height: 1.55;
   color: var(--dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .breakbox__actions {
@@ -354,34 +415,35 @@ body {
   margin-top: 2px;
 }
 
-/* "Stay locked" is the prominent, recommended choice. */
+/* "Stay locked" is the prominent, recommended (teal) choice. */
 .breakbox__stay {
   cursor: pointer;
   flex: 1;
-  padding: 11px 16px;
-  background: var(--on);
-  color: var(--bg);
+  padding: 12px 16px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 11px;
+  background: linear-gradient(180deg, var(--teal-bright), var(--teal));
+  color: #06241f;
   font-family: var(--sans);
   font-size: 13.5px;
-  font-weight: 500;
-  transition: opacity 0.18s ease;
+  font-weight: 600;
+  box-shadow: 0 6px 22px -8px var(--teal-glow);
+  transition: filter 0.18s ease;
 }
 
 .breakbox__stay:hover {
-  opacity: 0.85;
+  filter: brightness(1.05);
 }
 
 /* Paying is intentionally understated — we don't sell the exit. */
 .breakbox__pay {
   cursor: pointer;
   flex: none;
-  padding: 11px 16px;
+  padding: 12px 16px;
   background: transparent;
   color: var(--faint);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 11px;
   font-family: var(--sans);
   font-size: 13px;
   font-weight: 400;
@@ -395,7 +457,7 @@ body {
 
 .breakbox__stay:focus-visible,
 .breakbox__pay:focus-visible {
-  outline: 2px solid var(--on);
+  outline: 2px solid var(--teal);
   outline-offset: 2px;
 }
 
@@ -405,9 +467,9 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  background: var(--panel);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: 14px;
 }
 
 .awaiting[hidden] {
@@ -418,7 +480,7 @@ body {
   font-size: 13px;
   line-height: 1.45;
   color: var(--dim);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .awaiting__cancel {
@@ -436,10 +498,20 @@ body {
 }
 
 .awaiting__cancel:hover {
-  color: var(--on);
+  color: var(--text);
 }
 
-/* Quiet staggered entrance. */
+/* ── Motion ── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -469,7 +541,8 @@ body {
   *,
   .hub__head,
   .actions,
-  .commit {
+  .commit,
+  .orb {
     animation: none !important;
     transition: none !important;
   }

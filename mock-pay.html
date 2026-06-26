@@ -9,10 +9,17 @@
       rel="stylesheet"
     />
     <style>
-      :root { --bg:#100f0d; --on:#ece8df; --dim:rgba(236,232,223,.6); --line:rgba(236,232,223,.16); }
+      :root {
+        --bg:#080b16; --on:#eef1f7; --dim:rgba(238,241,247,.6); --line:rgba(238,241,247,.1);
+        --teal:#5fe7d2; --teal-bright:#86f4e2; --teal-glow:rgba(95,231,210,.35);
+      }
       * { box-sizing: border-box; margin: 0; }
       body {
-        background: var(--bg); color: var(--on); min-height: 100vh;
+        min-height: 100vh; color: var(--on);
+        background:
+          radial-gradient(820px 560px at 50% -12%, rgba(95,231,210,.12), transparent 60%),
+          radial-gradient(680px 520px at 86% 8%, rgba(96,132,255,.12), transparent 55%),
+          var(--bg);
         font-family: "Switzer", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
         -webkit-font-smoothing: antialiased; display: grid; place-items: center; padding: 32px;
       }
@@ -21,14 +28,15 @@
         font-size: 10.5px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
         color: var(--dim);
       }
-      .amount { font-size: 44px; font-weight: 300; letter-spacing: -.02em; margin: 14px 0 6px; }
+      .amount { font-size: 44px; font-weight: 500; letter-spacing: -.02em; margin: 14px 0 6px; }
       .desc { font-size: 14px; color: var(--dim); margin-bottom: 32px; line-height: 1.5; }
       button {
-        width: 100%; padding: 14px; border: 0; border-radius: 10px; cursor: pointer;
-        font-family: inherit; font-size: 14px; font-weight: 500;
-        background: var(--on); color: var(--bg); transition: opacity .18s ease;
+        width: 100%; padding: 14px; border: 0; border-radius: 11px; cursor: pointer;
+        font-family: inherit; font-size: 14px; font-weight: 600; color: #06241f;
+        background: linear-gradient(180deg, var(--teal-bright), var(--teal));
+        box-shadow: 0 6px 22px -8px var(--teal-glow); transition: filter .18s ease;
       }
-      button:hover { opacity: .88; }
+      button:hover { filter: brightness(1.05); }
       .done { display: none; }
       .done .amount { font-size: 26px; }
       .muted { font-size: 12.5px; color: var(--dim); margin-top: 18px; line-height: 1.5; }
