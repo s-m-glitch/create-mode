@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Mode</title>
+
+    <!-- Switzer — the freeks typeface (freeks.vercel.app). -->
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=switzer@300,400,500,600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="hub.css" />
+  </head>
+  <body>
+    <main class="hub">
+      <header class="hub__head">
+        <h1 class="hub__thesis">Create, not consume.</h1>
+      </header>
+
+      <nav class="actions" aria-label="Create on LinkedIn">
+        <button class="row" id="post" type="button">
+          <span class="row__body">
+            <span class="row__title">Write a post</span>
+            <span class="row__sub">Open the composer</span>
+          </span>
+          <span class="row__arrow" aria-hidden="true">↗</span>
+        </button>
+        <button class="row" id="messages" type="button">
+          <span class="row__body">
+            <span class="row__title">Messages</span>
+            <span class="row__sub">Reply and reach out</span>
+          </span>
+          <span class="row__arrow" aria-hidden="true">↗</span>
+        </button>
+      </nav>
+
+      <section class="commit" id="commit" aria-live="polite">
+        <div class="commit__bar">
+          <span class="label">Block the feed</span>
+          <span class="label commit__state" id="commitState">Not blocked</span>
+        </div>
+
+        <p class="commit__headline" id="commitTitle" hidden></p>
+        <p class="commit__sub" id="commitSub">
+          Commit to a stretch. No early exit — you can only extend it.
+        </p>
+
+        <div class="seg" id="durations" role="group" aria-label="Block duration"></div>
+
+        <div class="confirm" id="confirm" hidden>
+          <span class="confirm__text" id="confirmText"></span>
+          <button class="confirm__go label" id="confirmGo" type="button">Lock it in</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="hub.js"></script>
+  </body>
+</html>

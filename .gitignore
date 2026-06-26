@@ -1,0 +1,8 @@
+# Chrome-generated artifacts from loading the unpacked extension
+_metadata/
+
+# macOS
+.DS_Store
+
+# Editor / harness
+.claude/

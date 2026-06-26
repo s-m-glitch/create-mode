@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Create Mode",
+  "version": "1.0.0",
+  "description": "Use LinkedIn to create, not consume. Blocks the home feed; keeps posting, messaging, notifications, and profiles fully working.",
+
+  "permissions": [
+    "declarativeNetRequest",
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "*://*.linkedin.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_title": "Create Mode — open Create Hub"
+  },
+
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "feed_redirect",
+        "enabled": false,
+        "path": "rules.json"
+      }
+    ]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.linkedin.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://*.linkedin.com/*"],
+      "js": ["feed-guard.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["hub.html"],
+      "matches": ["*://*.linkedin.com/*"]
+    }
+  ]
+}

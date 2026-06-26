@@ -1,0 +1,326 @@
+/* hub.css — the Create Hub. Built on the freeks type system:
+   Switzer everywhere, warm monochrome, light-weight headlines. */
+
+:root {
+  /* freeks tokens (freeks.vercel.app) */
+  --bg: #100f0d; /* warm near-black */
+  --on: #ece8df; /* warm bone */
+  --dim: rgba(236, 232, 223, 0.74);
+  --faint: rgba(236, 232, 223, 0.52);
+  --mute: rgba(236, 232, 223, 0.38);
+  --line: rgba(236, 232, 223, 0.16);
+  --line-2: rgba(236, 232, 223, 0.28);
+  --panel: rgba(236, 232, 223, 0.025);
+  --panel-2: rgba(236, 232, 223, 0.06);
+
+  --sans: "Switzer", system-ui, -apple-system, "Helvetica Neue", Arial,
+    sans-serif;
+  --r: 14px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--on);
+  font-family: var(--sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  display: grid;
+  place-items: center;
+  padding: 48px 24px;
+}
+
+/* Tracked micro-label — Switzer, not monospace. */
+.label {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.hub {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+/* ── Header ── */
+.hub__thesis {
+  margin: 0;
+  font-weight: 300;
+  font-size: clamp(27px, 8.4vw, 41px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  white-space: nowrap; /* one line, always */
+  color: var(--on);
+}
+
+/* ── Action list ── */
+.actions {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.row {
+  appearance: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  color: var(--on);
+  font-family: var(--sans);
+  padding: 21px 22px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 16px;
+  transition: background 0.2s ease;
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.row:hover {
+  background: var(--panel-2);
+}
+
+.row:focus-visible {
+  outline: 1px solid var(--line-2);
+  outline-offset: -1px;
+}
+
+.row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.row__title {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.row__sub {
+  font-size: 13.5px;
+  color: var(--faint);
+}
+
+.row__arrow {
+  align-self: center;
+  font-size: 16px;
+  color: var(--mute);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.row:hover .row__arrow {
+  color: var(--on);
+  transform: translate(2px, -2px);
+}
+
+/* ── Commit / status ── */
+.commit {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.commit__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.commit__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--faint);
+}
+
+.commit__state::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mute);
+}
+
+.commit.is-blocked .commit__state {
+  color: var(--on);
+}
+
+.commit.is-blocked .commit__state::before {
+  background: var(--on);
+}
+
+.commit__headline {
+  font-weight: 300;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--on);
+  font-variant-numeric: tabular-nums;
+}
+
+.commit__headline[hidden] {
+  display: none;
+}
+
+.commit__sub {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--dim);
+  font-weight: 300;
+}
+
+/* Segmented control — joined cells, hairline dividers, invert on pick. */
+.seg {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--line-2);
+  border-radius: 11px;
+  overflow: hidden;
+}
+
+.seg__btn {
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  padding: 14px 4px;
+  color: var(--dim);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.seg__btn:first-child {
+  border-left: 0;
+}
+
+.seg__btn:hover {
+  background: var(--panel-2);
+  color: var(--on);
+}
+
+.seg__btn:focus-visible {
+  outline: 1px solid var(--line-2);
+  outline-offset: -1px;
+}
+
+.seg__btn.is-pending {
+  background: var(--on);
+  color: var(--bg);
+}
+
+/* Confirm — deliberate friction before a no-undo commitment. */
+.confirm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.confirm[hidden] {
+  display: none;
+}
+
+.confirm__text {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--dim);
+  font-weight: 300;
+}
+
+.confirm__text strong {
+  color: var(--on);
+  font-weight: 500;
+}
+
+.confirm__go {
+  cursor: pointer;
+  flex: none;
+  padding: 11px 17px;
+  background: var(--on);
+  color: var(--bg);
+  border: 0;
+  border-radius: 8px;
+  color: var(--bg);
+  transition: opacity 0.18s ease;
+}
+
+.confirm__go:hover {
+  opacity: 0.85;
+}
+
+.confirm__go:focus-visible {
+  outline: 2px solid var(--on);
+  outline-offset: 3px;
+}
+
+/* Quiet staggered entrance. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hub__head,
+.actions,
+.commit {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.actions {
+  animation-delay: 0.06s;
+}
+
+.commit {
+  animation-delay: 0.12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .hub__head,
+  .actions,
+  .commit {
+    animation: none !important;
+    transition: none !important;
+  }
+}
