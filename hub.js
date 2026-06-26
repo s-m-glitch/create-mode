@@ -1,10 +1,14 @@
-// hub.js — Create Hub buttons + the feed-block commitment.
+// hub.js — Create Hub: create tools, the block commitment, and the
+// pay-to-break flow.
 
 const $ = (id) => document.getElementById(id);
 
+// `chrome.storage` is absent in a plain browser preview — degrade gracefully.
+const store = typeof chrome !== "undefined" && chrome.storage ? chrome.storage : null;
+const extUrl = (p) =>
+  typeof chrome !== "undefined" && chrome.runtime ? chrome.runtime.getURL(p) : p;
+
 // ── Create tools: plain routes, no DOM scraping ──
-// "Write a post" uses the composer URL, which rules.json exempts from the
-// feed redirect.
 const ROUTES = {
   post: "https://www.linkedin.com/feed/?shareActive=true",
   messages: "https://www.linkedin.com/messaging/",
@@ -15,12 +19,26 @@ $("messages").addEventListener("click", () => (location.href = ROUTES.messages))
 // ── Block commitment ──
 const DAY = 86_400_000;
 const DURATIONS = [
-  { label: "5 min", ms: 5 * 60_000 }, // TEMP: test option — remove before real use
-  { label: "1 day", ms: 1 * DAY },
-  { label: "1 week", ms: 7 * DAY },
-  { label: "2 weeks", ms: 14 * DAY },
-  { label: "1 month", ms: 30 * DAY },
+  { label: "5 min", ms: 5 * 60_000, price: 1 }, // TEMP: test option — remove before real use
+  { label: "1 day", ms: 1 * DAY, price: 5 },
+  { label: "1 week", ms: 7 * DAY, price: 10 },
+  { label: "2 weeks", ms: 14 * DAY, price: 25 },
+  { label: "1 month", ms: 30 * DAY, price: 100 },
 ];
+
+// ── Pay-to-break configuration ──
+// MOCK mode (no API_BASE) opens a fake checkout page that marks the payment
+// "paid", so the whole flow is clickable before Stripe/the backend exist.
+// To go live: set API_BASE to the backend, and PAYMENT_LINKS[price] to the
+// matching Stripe Payment Link.
+const API_BASE = ""; // e.g. "https://create-mode-api.vercel.app/api"
+const PAYMENT_LINKS = {
+  // 5:   "https://buy.stripe.com/...",
+  // 10:  "https://buy.stripe.com/...",
+  // 25:  "https://buy.stripe.com/...",
+  // 100: "https://buy.stripe.com/...",
+};
+const MOCK = !API_BASE;
 
 const els = {
   commit: $("commit"),
@@ -31,10 +49,21 @@ const els = {
   confirm: $("confirm"),
   confirmText: $("confirmText"),
   confirmGo: $("confirmGo"),
+  breakLink: $("breakLink"),
+  breakBox: $("breakBox"),
+  breakBody: $("breakBody"),
+  breakPay: $("breakPay"),
+  breakStay: $("breakStay"),
+  awaiting: $("awaiting"),
+  breakCancel: $("breakCancel"),
 };
 
-let pending = null; // { ms, until } awaiting confirmation
 let currentBlockUntil = null;
+let currentBreakPrice = null;
+let pending = null; // commit selection awaiting confirmation { ms, until, price }
+let pendingBreak = null; // payment in flight { nonce, price, ts }
+let breakConfirmOpen = false;
+let pollTimer = null;
 
 const isBlocked = (until) => typeof until === "number" && until > Date.now();
 
@@ -56,18 +85,19 @@ function fmtRemaining(ms) {
   return `${days} day${days === 1 ? "" : "s"}`;
 }
 
-// Build the four duration chips once.
-DURATIONS.forEach(({ label, ms }) => {
+// Build the duration chips once.
+DURATIONS.forEach((d) => {
   const btn = document.createElement("button");
   btn.className = "seg__btn";
   btn.type = "button";
-  btn.textContent = label;
-  btn.addEventListener("click", () => choose(ms, btn));
+  btn.textContent = d.label;
+  btn.addEventListener("click", () => choose(d, btn));
   els.durations.appendChild(btn);
 });
-
-// Size the segmented control to however many durations exist.
 els.durations.style.gridTemplateColumns = `repeat(${DURATIONS.length}, 1fr)`;
+
+const clearChips = () =>
+  [...els.durations.children].forEach((c) => c.classList.remove("is-pending"));
 
 // A chip can only ever push the deadline further out, never closer.
 function targetFor(ms) {
@@ -76,18 +106,16 @@ function targetFor(ms) {
   return Math.max(base, now + ms);
 }
 
-function choose(ms, btn) {
-  const until = targetFor(ms);
-
-  // If already blocked, a shorter pick wouldn't change anything — ignore it
-  // so the confirm never implies a (forbidden) early exit.
+function choose(d, btn) {
+  const until = targetFor(d.ms);
+  // A shorter pick while blocked would imply a (forbidden) early exit — ignore.
   if (isBlocked(currentBlockUntil) && until <= currentBlockUntil) {
     pending = null;
+    clearChips();
     renderPending();
     return;
   }
-
-  pending = { ms, until };
+  pending = { ms: d.ms, until, price: d.price };
   [...els.durations.children].forEach((c) =>
     c.classList.toggle("is-pending", c === btn)
   );
@@ -95,56 +123,182 @@ function choose(ms, btn) {
 }
 
 function renderPending() {
-  if (!pending) {
+  if (!pending || els.durations.hidden) {
     els.confirm.hidden = true;
     return;
   }
-  const verb = isBlocked(currentBlockUntil) ? "Extend the block to" : "Block the feed until";
-  els.confirmText.innerHTML = `${verb} <strong>${fmtDate(pending.until)}</strong>. No undo.`;
+  const verb = isBlocked(currentBlockUntil) ? "Extend the lock to" : "Lock the feed until";
+  els.confirmText.innerHTML =
+    `${verb} <strong>${fmtDate(pending.until)}</strong>. ` +
+    `Breaking early costs <strong>$${pending.price}</strong>.`;
   els.confirm.hidden = false;
 }
 
 els.confirmGo.addEventListener("click", () => {
   if (!pending) return;
-  if (store) store.local.set({ blockUntil: pending.until });
+  currentBlockUntil = pending.until;
+  currentBreakPrice = pending.price;
+  if (store) store.local.set({ blockUntil: pending.until, breakPrice: pending.price });
   pending = null;
+  renderState();
 });
 
-function render(blockUntil) {
-  currentBlockUntil = blockUntil;
-  const blocked = isBlocked(blockUntil);
+// ── Break-and-pay ──
+els.breakLink.addEventListener("click", () => {
+  breakConfirmOpen = true;
+  renderState();
+});
+els.breakStay.addEventListener("click", () => {
+  breakConfirmOpen = false;
+  renderState();
+});
+els.breakPay.addEventListener("click", () => beginBreak(currentBreakPrice));
+els.breakCancel.addEventListener("click", cancelBreak);
+
+function openCheckout(price, nonce) {
+  const url = MOCK
+    ? `${extUrl("mock-pay.html")}?nonce=${encodeURIComponent(nonce)}&price=${price}`
+    : `${PAYMENT_LINKS[price]}?client_reference_id=${encodeURIComponent(nonce)}`;
+  window.open(url, "_blank");
+}
+
+function paymentStatus(nonce) {
+  if (MOCK) {
+    return new Promise((resolve) => {
+      if (!store) return resolve(false);
+      const key = `paid:${nonce}`;
+      store.local.get(key, (o) => resolve(!!o[key]));
+    });
+  }
+  return fetch(`${API_BASE}/status?nonce=${encodeURIComponent(nonce)}`)
+    .then((r) => r.json())
+    .then((d) => !!d.paid)
+    .catch(() => false);
+}
+
+function beginBreak(price) {
+  if (!price) return;
+  const nonce =
+    (crypto.randomUUID && crypto.randomUUID()) ||
+    `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+  pendingBreak = { nonce, price, ts: Date.now() };
+  breakConfirmOpen = false;
+  if (store) store.local.set({ pendingBreak });
+  openCheckout(price, nonce);
+  renderState();
+  startPolling();
+}
+
+function startPolling() {
+  stopPolling();
+  pollTimer = setInterval(checkBreak, 2500);
+  checkBreak();
+}
+function stopPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = null;
+}
+
+async function checkBreak() {
+  if (!pendingBreak) return stopPolling();
+  if (Date.now() - pendingBreak.ts > 3_600_000) return cancelBreak(); // stale > 1h
+  if (await paymentStatus(pendingBreak.nonce)) finalizeBreak();
+}
+
+function finalizeBreak() {
+  stopPolling();
+  const nonce = pendingBreak?.nonce;
+  pendingBreak = null;
+  currentBlockUntil = null;
+  currentBreakPrice = null;
+  if (store) {
+    store.local.set({ blockUntil: null, breakPrice: null, pendingBreak: null });
+    if (nonce) store.local.remove(`paid:${nonce}`);
+  }
+  renderState();
+}
+
+function cancelBreak() {
+  stopPolling();
+  pendingBreak = null;
+  if (store) store.local.set({ pendingBreak: null });
+  renderState();
+}
+
+// ── Render ──
+// Views in the commit section: idle · blocked · breakConfirm · awaiting.
+function renderState() {
+  const blocked = isBlocked(currentBlockUntil);
+  const awaiting = !!pendingBreak && blocked;
+  const breaking = breakConfirmOpen && blocked && !awaiting;
   els.commit.classList.toggle("is-blocked", blocked);
 
+  // Status + headline + sub
   if (blocked) {
-    els.state.textContent = "Blocked";
+    els.state.textContent = awaiting ? "Breaking…" : "Blocked";
     els.title.hidden = false;
-    els.title.textContent = `${fmtRemaining(blockUntil - Date.now())} left`;
-    els.sub.textContent = `Locked until ${fmtDate(blockUntil)} — extend below, never shorten.`;
+    els.title.textContent = `${fmtRemaining(currentBlockUntil - Date.now())} left`;
+    els.sub.textContent = awaiting
+      ? `Locked until ${fmtDate(currentBlockUntil)}.`
+      : `Locked until ${fmtDate(currentBlockUntil)} — extend below, never shorten.`;
   } else {
     els.state.textContent = "Not blocked";
     els.title.hidden = true;
     els.sub.textContent = "Commit to a stretch. No early exit — you can only extend it.";
   }
 
-  // A live deadline change invalidates any pending selection.
-  pending = null;
-  [...els.durations.children].forEach((c) => c.classList.remove("is-pending"));
+  // Durations + commit confirm: only when not mid-break.
+  const showDurations = !awaiting && !breaking;
+  els.durations.hidden = !showDurations;
+  if (!showDurations) pending = null;
+  if (!pending) clearChips();
   renderPending();
+
+  // Break link: blocked, not already breaking/awaiting.
+  const showBreakLink = blocked && !breaking && !awaiting;
+  els.breakLink.hidden = !showBreakLink;
+  if (showBreakLink) {
+    els.breakLink.textContent = `Need out early? Break the lock — $${currentBreakPrice} — but don't do it.`;
+  }
+
+  // Break confirm box.
+  els.breakBox.hidden = !breaking;
+  if (breaking) {
+    const left = fmtRemaining(currentBlockUntil - Date.now());
+    els.breakBody.textContent = `Breaking now ends your commitment ${left} early. You set this stake yourself.`;
+    els.breakPay.textContent = `$${currentBreakPrice} — back to the scroll`;
+  }
+
+  // Awaiting payment.
+  els.awaiting.hidden = !awaiting;
 }
 
-// `chrome.storage` is absent in a plain browser preview — degrade gracefully.
-const store = typeof chrome !== "undefined" && chrome.storage ? chrome.storage : null;
-
+// ── Boot ──
 if (store) {
-  store.local.get({ blockUntil: null }, ({ blockUntil }) => render(blockUntil));
+  store.local.get(
+    { blockUntil: null, breakPrice: null, pendingBreak: null },
+    (s) => {
+      currentBlockUntil = s.blockUntil;
+      currentBreakPrice = s.breakPrice;
+      pendingBreak = s.pendingBreak;
+      // A pending break only makes sense while still blocked.
+      if (pendingBreak && !isBlocked(currentBlockUntil)) pendingBreak = null;
+      renderState();
+      if (pendingBreak) startPolling();
+    }
+  );
   store.onChanged.addListener((changes, area) => {
-    if (area === "local" && changes.blockUntil) render(changes.blockUntil.newValue);
+    if (area !== "local") return;
+    if (changes.blockUntil) currentBlockUntil = changes.blockUntil.newValue;
+    if (changes.breakPrice) currentBreakPrice = changes.breakPrice.newValue;
+    if (changes.pendingBreak) pendingBreak = changes.pendingBreak.newValue;
+    renderState();
   });
 } else {
-  render(null);
+  renderState();
 }
 
 // Keep the "X left" countdown honest while the hub sits open.
 setInterval(() => {
-  if (isBlocked(currentBlockUntil)) render(currentBlockUntil);
+  if (isBlocked(currentBlockUntil)) renderState();
 }, 60_000);

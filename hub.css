@@ -205,6 +205,10 @@ body {
   overflow: hidden;
 }
 
+.seg[hidden] {
+  display: none;
+}
+
 .seg__btn {
   appearance: none;
   cursor: pointer;
@@ -287,6 +291,152 @@ body {
 .confirm__go:focus-visible {
   outline: 2px solid var(--on);
   outline-offset: 3px;
+}
+
+/* ── Break the lock (deliberately quiet + discouraging) ── */
+.breaklink {
+  appearance: none;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  margin-top: 2px;
+  text-align: left;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--mute);
+  transition: color 0.18s ease;
+}
+
+.breaklink:hover {
+  color: var(--faint);
+}
+
+.breaklink[hidden] {
+  display: none;
+}
+
+.breakbox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.breakbox[hidden] {
+  display: none;
+}
+
+.breakbox__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: var(--on);
+}
+
+.breakbox__body {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--dim);
+  font-weight: 300;
+}
+
+.breakbox__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+/* "Stay locked" is the prominent, recommended choice. */
+.breakbox__stay {
+  cursor: pointer;
+  flex: 1;
+  padding: 11px 16px;
+  background: var(--on);
+  color: var(--bg);
+  border: 0;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: opacity 0.18s ease;
+}
+
+.breakbox__stay:hover {
+  opacity: 0.85;
+}
+
+/* Paying is intentionally understated — we don't sell the exit. */
+.breakbox__pay {
+  cursor: pointer;
+  flex: none;
+  padding: 11px 16px;
+  background: transparent;
+  color: var(--faint);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.breakbox__pay:hover {
+  color: var(--dim);
+  border-color: var(--line-2);
+}
+
+.breakbox__stay:focus-visible,
+.breakbox__pay:focus-visible {
+  outline: 2px solid var(--on);
+  outline-offset: 2px;
+}
+
+.awaiting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.awaiting[hidden] {
+  display: none;
+}
+
+.awaiting__text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--dim);
+  font-weight: 300;
+}
+
+.awaiting__cancel {
+  cursor: pointer;
+  flex: none;
+  background: none;
+  border: 0;
+  padding: 4px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--mute);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.18s ease;
+}
+
+.awaiting__cancel:hover {
+  color: var(--on);
 }
 
 /* Quiet staggered entrance. */

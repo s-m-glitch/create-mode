@@ -55,6 +55,23 @@
           <span class="confirm__text" id="confirmText"></span>
           <button class="confirm__go label" id="confirmGo" type="button">Lock it in</button>
         </div>
+
+        <!-- Break-the-lock affordance (deliberately discouraging) -->
+        <button class="breaklink" id="breakLink" type="button" hidden></button>
+
+        <div class="breakbox" id="breakBox" hidden>
+          <p class="breakbox__title">Back to the scroll.</p>
+          <p class="breakbox__body" id="breakBody"></p>
+          <div class="breakbox__actions">
+            <button class="breakbox__stay" id="breakStay" type="button">Stay locked</button>
+            <button class="breakbox__pay" id="breakPay" type="button"></button>
+          </div>
+        </div>
+
+        <div class="awaiting" id="awaiting" hidden>
+          <span class="awaiting__text">Finish checkout in the other tab — this unlocks when payment clears.</span>
+          <button class="awaiting__cancel" id="breakCancel" type="button">Cancel</button>
+        </div>
       </section>
     </main>
 
