@@ -1,25 +1,25 @@
-/* hub.css — Create Hub, tomo.ai-inspired: bright daytime sky, soft clouds,
-   frosted-glass cards, heavy black headline, lemon-yellow CTAs. */
+/* hub.css — Create Hub. Light black-and-white: paper background, frosted
+   cards, heavy black headline, near-black CTAs. (tomo-derived layout.) */
 
 :root {
-  --sky-1: #7eb7e8; /* upper sky */
-  --sky-2: #b4dcf4;
-  --sky-3: #dcecf7; /* pale horizon */
+  --paper-1: #e8e8e6; /* upper light gray */
+  --paper-2: #f1f1ef;
+  --paper-3: #f5f5f3;
 
-  --ink: #11151e;
-  --ink-dim: rgba(17, 21, 30, 0.66);
-  --ink-faint: rgba(17, 21, 30, 0.46);
-  --ink-mute: rgba(17, 21, 30, 0.3);
-  --line: rgba(17, 21, 30, 0.12);
+  --ink: #131316;
+  --ink-dim: rgba(19, 19, 22, 0.66);
+  --ink-faint: rgba(19, 19, 22, 0.46);
+  --ink-mute: rgba(19, 19, 22, 0.3);
+  --line: rgba(19, 19, 22, 0.12);
 
-  --yellow: #ecf23f;
-  --yellow-deep: #dde22f;
-  --green: #46c779;
+  --btn: #16161a;
+  --btn-hover: #2c2c32;
+  --on-btn: #f6f5f3;
 
   --card: rgba(255, 255, 255, 0.5);
-  --card-2: rgba(255, 255, 255, 0.68);
-  --card-border: rgba(255, 255, 255, 0.78);
-  --shadow: 0 14px 34px -18px rgba(20, 45, 80, 0.45);
+  --card-2: rgba(255, 255, 255, 0.72);
+  --card-border: rgba(255, 255, 255, 0.85);
+  --shadow: 0 14px 34px -18px rgba(0, 0, 0, 0.3);
 
   --sans: "Switzer", system-ui, -apple-system, "Helvetica Neue", Arial,
     sans-serif;
@@ -38,12 +38,11 @@ body {
 }
 
 body {
-  /* Bright sky with soft clouds and a hint of green ground below. */
+  /* Soft paper with faint lighter pools so the frosted cards have depth. */
   background:
-    radial-gradient(680px 320px at 73% 24%, rgba(255, 255, 255, 0.6), transparent 62%),
-    radial-gradient(560px 280px at 15% 60%, rgba(255, 255, 255, 0.5), transparent 60%),
-    radial-gradient(900px 240px at 50% 118%, rgba(120, 200, 130, 0.55), transparent 60%),
-    linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 54%, var(--sky-3) 100%);
+    radial-gradient(680px 320px at 73% 22%, rgba(255, 255, 255, 0.7), transparent 62%),
+    radial-gradient(560px 280px at 15% 60%, rgba(255, 255, 255, 0.55), transparent 60%),
+    linear-gradient(180deg, var(--paper-1) 0%, var(--paper-2) 58%, var(--paper-3) 100%);
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
@@ -95,8 +94,8 @@ body {
   width: 100%;
   text-align: left;
   background: var(--card);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
   border: 1px solid var(--card-border);
   border-radius: var(--r);
   color: var(--ink);
@@ -185,8 +184,7 @@ body {
 }
 
 .commit.is-blocked .commit__state::before {
-  background: var(--green);
-  box-shadow: 0 0 9px rgba(70, 199, 121, 0.7);
+  background: var(--ink);
 }
 
 .commit__headline {
@@ -216,8 +214,8 @@ body {
   border-radius: 14px;
   overflow: hidden;
   background: var(--card);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
 }
 
 .seg[hidden] {
@@ -255,8 +253,8 @@ body {
 }
 
 .seg__btn.is-pending {
-  background: var(--yellow);
-  color: var(--ink);
+  background: var(--btn);
+  color: var(--on-btn);
 }
 
 /* Commit confirm. */
@@ -267,8 +265,8 @@ body {
   gap: 14px;
   padding: 14px 16px;
   background: var(--card);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
   border: 1px solid var(--card-border);
   border-radius: 14px;
 }
@@ -289,7 +287,7 @@ body {
   font-weight: 700;
 }
 
-/* Bright lemon CTA — the tomo button. */
+/* Near-black CTA. */
 .confirm__go {
   flex: none;
   padding: 11px 18px;
@@ -298,14 +296,14 @@ body {
   cursor: pointer;
   border: 0;
   border-radius: 11px;
-  background: var(--yellow);
-  color: var(--ink);
+  background: var(--btn);
+  color: var(--on-btn);
   font-weight: 700;
   transition: background 0.18s ease, transform 0.12s ease;
 }
 
 .confirm__go:hover {
-  background: var(--yellow-deep);
+  background: var(--btn-hover);
 }
 
 .confirm__go:active {
@@ -348,8 +346,8 @@ body {
   gap: 12px;
   padding: 20px;
   background: var(--card);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
   border: 1px solid var(--card-border);
   border-radius: var(--r);
 }
@@ -378,15 +376,15 @@ body {
   margin-top: 2px;
 }
 
-/* "Stay locked" is the prominent (yellow) choice. */
+/* "Stay locked" is the prominent (near-black) choice. */
 .breakbox__stay {
   cursor: pointer;
   flex: 1;
   padding: 12px 16px;
   border: 0;
   border-radius: 12px;
-  background: var(--yellow);
-  color: var(--ink);
+  background: var(--btn);
+  color: var(--on-btn);
   font-family: var(--sans);
   font-size: 13.5px;
   font-weight: 700;
@@ -394,7 +392,7 @@ body {
 }
 
 .breakbox__stay:hover {
-  background: var(--yellow-deep);
+  background: var(--btn-hover);
 }
 
 /* Paying is intentionally understated — we don't sell the exit. */
@@ -430,8 +428,8 @@ body {
   gap: 12px;
   padding: 14px 16px;
   background: var(--card);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
   border: 1px solid var(--card-border);
   border-radius: 14px;
 }
