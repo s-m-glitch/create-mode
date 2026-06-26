@@ -2,7 +2,13 @@
   "manifest_version": 3,
   "name": "Create Mode",
   "version": "1.0.0",
-  "description": "Use LinkedIn to create, not consume. Blocks the home feed; keeps posting, messaging, notifications, and profiles fully working.",
+  "description": "Use LinkedIn to create, not consume. Blocks the home feed and notifications; keeps posting and messaging fully working.",
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
 
   "permissions": [
     "declarativeNetRequest",
@@ -18,7 +24,12 @@
   },
 
   "action": {
-    "default_title": "Create Mode — open Create Hub"
+    "default_title": "Create Mode — open Create Hub",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
 
   "declarative_net_request": {
