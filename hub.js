@@ -27,16 +27,18 @@ const DURATIONS = [
 ];
 
 // ── Pay-to-break configuration ──
-// MOCK mode (no API_BASE) opens a fake checkout page that marks the payment
-// "paid", so the whole flow is clickable before Stripe/the backend exist.
-// To go live: set API_BASE to the backend, and PAYMENT_LINKS[price] to the
-// matching Stripe Payment Link.
+// While API_BASE is empty we run in MOCK mode: a fake checkout page marks the
+// payment "paid" so the flow is clickable without a backend. Set API_BASE to
+// the deployed backend to go live — the Payment Links below are already wired.
 const API_BASE = ""; // e.g. "https://create-mode-api.vercel.app/api"
+
+// Stripe Payment Links, keyed by break price (USD). TEST-mode links — swap for
+// live-mode links before taking real money.
 const PAYMENT_LINKS = {
-  // 5:   "https://buy.stripe.com/...",
-  // 10:  "https://buy.stripe.com/...",
-  // 25:  "https://buy.stripe.com/...",
-  // 100: "https://buy.stripe.com/...",
+  5: "https://buy.stripe.com/test_cNifZbcZN50281v5jd6g800",
+  10: "https://buy.stripe.com/test_7sY4gt0d1502a9D5jd6g801",
+  25: "https://buy.stripe.com/test_6oUeV75xl8cea9D2716g802",
+  100: "https://buy.stripe.com/test_aFa28l9NBboq6Xr12X6g803",
 };
 const MOCK = !API_BASE;
 
@@ -155,11 +157,20 @@ els.breakStay.addEventListener("click", () => {
 els.breakPay.addEventListener("click", () => beginBreak(currentBreakPrice));
 els.breakCancel.addEventListener("click", cancelBreak);
 
+// Opens checkout; returns false if no payment link is configured for this tier
+// (e.g. the $1 test chip in live mode), so we don't launch a broken tab.
 function openCheckout(price, nonce) {
-  const url = MOCK
-    ? `${extUrl("mock-pay.html")}?nonce=${encodeURIComponent(nonce)}&price=${price}`
-    : `${PAYMENT_LINKS[price]}?client_reference_id=${encodeURIComponent(nonce)}`;
-  window.open(url, "_blank");
+  if (MOCK) {
+    window.open(`${extUrl("mock-pay.html")}?nonce=${encodeURIComponent(nonce)}&price=${price}`, "_blank");
+    return true;
+  }
+  const link = PAYMENT_LINKS[price];
+  if (!link) {
+    console.warn(`[Create Mode] no payment link configured for $${price}`);
+    return false;
+  }
+  window.open(`${link}?client_reference_id=${encodeURIComponent(nonce)}`, "_blank");
+  return true;
 }
 
 function paymentStatus(nonce) {
@@ -181,10 +192,10 @@ function beginBreak(price) {
   const nonce =
     (crypto.randomUUID && crypto.randomUUID()) ||
     `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+  if (openCheckout(price, nonce) === false) return; // no link for this tier
   pendingBreak = { nonce, price, ts: Date.now() };
   breakConfirmOpen = false;
   if (store) store.local.set({ pendingBreak });
-  openCheckout(price, nonce);
   renderState();
   startPolling();
 }
