@@ -42,7 +42,7 @@ zip -q dist/create-mode.zip manifest.json background.js content.js feed-guard.js
 **Name:** Create Mode
 
 **Summary** (≤132 chars):
-> Use LinkedIn to create, not consume. Blocks the home feed and notifications; keeps posting and messaging fully working.
+> Use LinkedIn to create, don't consume. Blocks the home feed and notifications; keeps posting and messaging fully working.
 
 **Category:** Productivity  **Language:** English
 
@@ -65,7 +65,7 @@ zip -q dist/create-mode.zip manifest.json background.js content.js feed-guard.js
 > • Timed commitments — break early only by paying a stake you set
 > • No account, no tracking, no analytics
 >
-> Thesis: create, not consume.
+> Thesis: create, don't consume.
 
 ---
 

@@ -5,7 +5,7 @@ consumption one. The home feed **and notifications** are redirected to a clean
 **Create Hub** at the network layer (so they never render — no flash), while
 posting, messaging, and profiles all keep working normally.
 
-> Thesis: **create, not consume.**
+> Thesis: **create, don't consume.**
 
 ## What it does
 
