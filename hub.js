@@ -33,13 +33,12 @@ const DURATIONS = [
 // the deployed backend to go live — the Payment Links below are already wired.
 const API_BASE = "https://create-mode-api.vercel.app/api";
 
-// Stripe Payment Links, keyed by break price (USD). TEST-mode links — swap for
-// live-mode links before taking real money.
+// Stripe Payment Links (LIVE mode), keyed by break price (USD).
 const PAYMENT_LINKS = {
-  5: "https://buy.stripe.com/test_cNifZbcZN50281v5jd6g800",
-  10: "https://buy.stripe.com/test_7sY4gt0d1502a9D5jd6g801",
-  25: "https://buy.stripe.com/test_6oUeV75xl8cea9D2716g802",
-  100: "https://buy.stripe.com/test_aFa28l9NBboq6Xr12X6g803",
+  5: "https://buy.stripe.com/3cIcMZ8XMbYZcQygWmdfG01",
+  10: "https://buy.stripe.com/dRmeV70rg8MN4k20XodfG00",
+  25: "https://buy.stripe.com/28E00d5LAaUV2bUgWmdfG02",
+  100: "https://buy.stripe.com/00waER6PE1kldUC5dEdfG03",
 };
 const MOCK = !API_BASE;
 
