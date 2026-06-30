@@ -17,7 +17,7 @@
       <nav class="actions" aria-label="Create on LinkedIn">
         <button class="row" id="post" type="button">
           <span class="row__body">
-            <span class="row__title">Write a post</span>
+            <span class="row__title">Post something</span>
             <span class="row__sub">Open the composer</span>
           </span>
           <span class="row__arrow" aria-hidden="true">↗</span>
@@ -38,8 +38,10 @@
         </div>
 
         <p class="commit__headline" id="commitTitle" hidden></p>
-        <p class="commit__sub" id="commitSub">
-          Commit to a stretch. No early exit — you can only extend it.
+        <p class="commit__subline">
+          <span class="commit__sub" id="commitSub">Get off LinkedIn. Do something productive. Or fun!</span>
+          <!-- Break-the-lock affordance, inline with the "Locked until" line when blocked -->
+          <button class="breaklink" id="breakLink" type="button" hidden></button>
         </p>
 
         <div class="seg" id="durations" role="group" aria-label="Block duration"></div>
@@ -48,9 +50,6 @@
           <span class="confirm__text" id="confirmText"></span>
           <button class="confirm__go label" id="confirmGo" type="button">Lock it in</button>
         </div>
-
-        <!-- Break-the-lock affordance (deliberately discouraging) -->
-        <button class="breaklink" id="breakLink" type="button" hidden></button>
 
         <div class="breakbox" id="breakBox" hidden>
           <p class="breakbox__title">Back to the scroll.</p>

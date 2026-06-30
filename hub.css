@@ -290,10 +290,10 @@ body {
 /* Commit confirm. */
 .confirm {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 14px 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
   background: var(--card);
   -webkit-backdrop-filter: blur(16px) saturate(1.1);
   backdrop-filter: blur(16px) saturate(1.1);
@@ -320,6 +320,7 @@ body {
 /* Near-black CTA. */
 .confirm__go {
   flex: none;
+  align-self: flex-end;
   padding: 11px 18px;
   font-size: 12px;
   letter-spacing: 0.04em;
@@ -345,25 +346,32 @@ body {
   outline-offset: 3px;
 }
 
-/* ── Break the lock (quiet + discouraging) ── */
+/* ── Break the lock — inline with "Locked until", made visible (it's the paid action) ── */
+.commit__subline {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
 .breaklink {
   appearance: none;
   cursor: pointer;
   background: none;
   border: 0;
-  padding: 4px 0;
-  margin-top: 2px;
-  text-align: left;
+  padding: 0;
+  margin-left: 8px;
+  vertical-align: baseline;
   font-family: var(--sans);
-  font-size: 12.5px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--ink-mute);
-  transition: color 0.18s ease;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1.5px;
+  transition: opacity 0.18s ease;
 }
 
 .breaklink:hover {
-  color: var(--ink-faint);
+  opacity: 0.65;
 }
 
 .breaklink[hidden] {

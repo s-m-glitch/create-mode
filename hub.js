@@ -260,13 +260,11 @@ function renderState() {
     els.state.textContent = awaiting ? "Breaking…" : "Blocked";
     els.title.hidden = false;
     els.title.textContent = `${fmtRemaining(currentBlockUntil - Date.now())} left`;
-    els.sub.textContent = awaiting
-      ? `Locked until ${fmtUntil(currentBlockUntil)}.`
-      : `Locked until ${fmtUntil(currentBlockUntil)} — extend below, never shorten.`;
+    els.sub.textContent = `Locked until ${fmtUntil(currentBlockUntil)}.`;
   } else {
     els.state.textContent = "Not blocked";
     els.title.hidden = true;
-    els.sub.textContent = "Commit to a stretch. No early exit — you can only extend it.";
+    els.sub.textContent = "Get off LinkedIn. Do something productive. Or fun!";
   }
 
   // Durations + commit confirm: only when not mid-break.
@@ -280,7 +278,7 @@ function renderState() {
   const showBreakLink = blocked && !breaking && !awaiting;
   els.breakLink.hidden = !showBreakLink;
   if (showBreakLink) {
-    els.breakLink.textContent = `Need out early? Break the lock — $${currentBreakPrice} — but don't do it.`;
+    els.breakLink.textContent = `Break the lock — $${currentBreakPrice}`;
   }
 
   // Break confirm box.
