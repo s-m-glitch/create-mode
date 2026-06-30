@@ -63,9 +63,12 @@ const els = {
 let currentBlockUntil = null;
 let currentBreakPrice = null;
 let pending = null; // commit selection awaiting confirmation { ms, until, price }
-let pendingBreak = null; // payment in flight { nonce, price, ts }
+let pendingBreaks = []; // initiated breaks awaiting redemption: [{ nonce, price, ts }]
+let awaitingUI = false; // whether the "finish checkout" box is showing
 let breakConfirmOpen = false;
 let pollTimer = null;
+let polling = false; // in-flight guard so status polls don't overlap
+const PAID_TTL_MS = 30 * DAY; // matches the backend's paid-record TTL
 
 const isBlocked = (until) => typeof until === "number" && until > Date.now();
 
@@ -204,16 +207,26 @@ function beginBreak(price) {
     (crypto.randomUUID && crypto.randomUUID()) ||
     `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
   if (openCheckout(price, nonce) === false) return; // no link for this tier
-  pendingBreak = { nonce, price, ts: Date.now() };
+  pendingBreaks = [...pendingBreaks, { nonce, price, ts: Date.now() }];
+  awaitingUI = true;
   breakConfirmOpen = false;
-  if (store) store.local.set({ pendingBreak });
+  persistPendingBreaks();
   renderState();
-  startPolling();
+  ensurePolling();
 }
 
+function persistPendingBreaks() {
+  if (store) store.local.set({ pendingBreaks });
+}
+
+// Poll while there's an initiated break to redeem and we're still blocked.
+function ensurePolling() {
+  if (isBlocked(currentBlockUntil) && pendingBreaks.length > 0) startPolling();
+  else stopPolling();
+}
 function startPolling() {
-  stopPolling();
-  pollTimer = setInterval(checkBreak, 2500);
+  if (pollTimer) return; // already running
+  pollTimer = setInterval(checkBreak, 3000);
   checkBreak();
 }
 function stopPolling() {
@@ -222,28 +235,48 @@ function stopPolling() {
 }
 
 async function checkBreak() {
-  if (!pendingBreak) return stopPolling();
-  if (Date.now() - pendingBreak.ts > 3_600_000) return cancelBreak(); // stale > 1h
-  if (await paymentStatus(pendingBreak.nonce)) finalizeBreak();
+  // Drop breaks whose server record has certainly expired (nothing to redeem).
+  const cutoff = Date.now() - PAID_TTL_MS;
+  const kept = pendingBreaks.filter((b) => b.ts > cutoff);
+  if (kept.length !== pendingBreaks.length) {
+    pendingBreaks = kept;
+    persistPendingBreaks();
+  }
+  if (!isBlocked(currentBlockUntil) || pendingBreaks.length === 0) {
+    stopPolling();
+    return;
+  }
+  if (polling) return; // don't overlap requests
+  polling = true;
+  try {
+    for (const b of pendingBreaks) {
+      if (await paymentStatus(b.nonce)) {
+        finalizeBreak();
+        return;
+      }
+    }
+  } finally {
+    polling = false;
+  }
 }
 
 function finalizeBreak() {
   stopPolling();
-  const nonce = pendingBreak?.nonce;
-  pendingBreak = null;
+  pendingBreaks = [];
+  awaitingUI = false;
   currentBlockUntil = null;
   currentBreakPrice = null;
   if (store) {
-    store.local.set({ blockUntil: null, breakPrice: null, pendingBreak: null });
-    if (nonce) store.local.remove(`paid:${nonce}`);
+    store.local.set({ blockUntil: null, breakPrice: null, pendingBreaks: [] });
   }
   renderState();
 }
 
 function cancelBreak() {
-  stopPolling();
-  pendingBreak = null;
-  if (store) store.local.set({ pendingBreak: null });
+  // Dismiss the waiting UI only. We KEEP the nonce and keep polling in the
+  // background: if the payment actually went through (a race, or they paid then
+  // hit cancel), it must still unlock — never strand a real charge.
+  awaitingUI = false;
   renderState();
 }
 
@@ -251,7 +284,7 @@ function cancelBreak() {
 // Views in the commit section: idle · blocked · breakConfirm · awaiting.
 function renderState() {
   const blocked = isBlocked(currentBlockUntil);
-  const awaiting = !!pendingBreak && blocked;
+  const awaiting = awaitingUI && blocked;
   const breaking = breakConfirmOpen && blocked && !awaiting;
   els.commit.classList.toggle("is-blocked", blocked);
 
@@ -296,23 +329,29 @@ function renderState() {
 // ── Boot ──
 if (store) {
   store.local.get(
-    { blockUntil: null, breakPrice: null, pendingBreak: null },
+    { blockUntil: null, breakPrice: null, pendingBreaks: [] },
     (s) => {
       currentBlockUntil = s.blockUntil;
       currentBreakPrice = s.breakPrice;
-      pendingBreak = s.pendingBreak;
-      // A pending break only makes sense while still blocked.
-      if (pendingBreak && !isBlocked(currentBlockUntil)) pendingBreak = null;
+      pendingBreaks = Array.isArray(s.pendingBreaks) ? s.pendingBreaks : [];
+      // Unredeemed breaks only matter while still blocked; otherwise the block
+      // already lifted and there's nothing left to unlock.
+      if (!isBlocked(currentBlockUntil)) pendingBreaks = [];
       renderState();
-      if (pendingBreak) startPolling();
+      ensurePolling(); // silently redeem a payment made in a prior session
     }
   );
   store.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
     if (changes.blockUntil) currentBlockUntil = changes.blockUntil.newValue;
     if (changes.breakPrice) currentBreakPrice = changes.breakPrice.newValue;
-    if (changes.pendingBreak) pendingBreak = changes.pendingBreak.newValue;
+    if (changes.pendingBreaks) {
+      pendingBreaks = Array.isArray(changes.pendingBreaks.newValue)
+        ? changes.pendingBreaks.newValue
+        : [];
+    }
     renderState();
+    ensurePolling();
   });
 } else {
   renderState();

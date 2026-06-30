@@ -127,7 +127,6 @@ function isBlockedRoute() {
 const COMPOSER_STYLE_ID = "create-mode-composer";
 let composerTimer = null;
 let sawComposer = false;
-let composerDeadline = 0;
 
 function injectComposerStyle() {
   if (document.getElementById(COMPOSER_STYLE_ID)) return;
@@ -161,7 +160,6 @@ function startComposerWatch() {
   injectComposerStyle();
   if (composerTimer) return;
   sawComposer = false;
-  composerDeadline = Date.now() + 6000; // grace for the composer to mount
   composerTimer = setInterval(() => {
     if (!blockedNow) return stopComposerWatch();
     if (!composerOpen()) {
@@ -172,10 +170,16 @@ function startComposerWatch() {
     }
     if (composerVisible()) {
       sawComposer = true;
-    } else if (sawComposer || Date.now() > composerDeadline) {
-      // It opened and was closed, or it never opened — don't sit on the feed.
+    } else if (sawComposer) {
+      // It was open and is now closed → don't reveal the feed.
       leaveForHub();
     }
+    // If the composer NEVER appears (e.g. LinkedIn renamed the editor classes
+    // in COMPOSER_MARKERS), we deliberately do NOT redirect: the composer modal
+    // lives outside the hidden `main`, so it's still usable. Trapping the user
+    // away from a working composer would break the core "post" action. The feed
+    // stays hidden behind it; worst case is a blank page if the composer truly
+    // failed to open, which the user can simply navigate away from.
   }, 250);
 }
 
