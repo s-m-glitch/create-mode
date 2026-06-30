@@ -26,16 +26,14 @@ const DURATIONS = [
 ];
 
 // ── Pay-to-break configuration ──
-// Backend that records paid breaks (Stripe webhook → KV) and answers /status.
+// Backend that creates a Stripe Checkout Session per break (/checkout), records
+// the payment (Stripe webhook → KV), and answers /status. The server owns the
+// price, so there's no static link to pay without a nonce.
 const API_BASE = "https://create-mode-api.vercel.app/api";
 
-// Stripe Payment Links (LIVE mode), keyed by break price (USD).
-const PAYMENT_LINKS = {
-  5: "https://buy.stripe.com/3cIcMZ8XMbYZcQygWmdfG01",
-  10: "https://buy.stripe.com/dRmeV70rg8MN4k20XodfG00",
-  25: "https://buy.stripe.com/28E00d5LAaUV2bUgWmdfG02",
-  100: "https://buy.stripe.com/00waER6PE1kldUC5dEdfG03",
-};
+// Valid break prices (USD). The authoritative amount lives server-side; this is
+// just a client-side guard so we never open checkout for a bogus tier.
+const BREAK_PRICES = [5, 10, 25, 100];
 
 const els = {
   commit: $("commit"),
@@ -171,17 +169,18 @@ els.breakStay.addEventListener("click", () => {
 els.breakPay.addEventListener("click", () => beginBreak(currentBreakPrice));
 els.breakCancel.addEventListener("click", cancelBreak);
 
-// Opens Stripe checkout for this tier. Returns false if there's no link for the
-// price or the browser blocked the pop-up, so we don't enter "awaiting" with no
-// checkout actually open.
+// Opens checkout for this tier by sending a new tab to our /checkout endpoint,
+// which creates the Stripe session (server-set amount) and redirects to it.
+// Opening synchronously on the click avoids pop-up blocking. Returns false if
+// the price is unknown or the pop-up was blocked, so we don't enter "awaiting"
+// with no checkout open.
 function openCheckout(price, nonce) {
-  const link = PAYMENT_LINKS[price];
-  if (!link) {
-    console.warn(`[Create Mode] no payment link configured for $${price}`);
+  if (!BREAK_PRICES.includes(price)) {
+    console.warn(`[Create Mode] unknown break price $${price}`);
     return false;
   }
   const win = window.open(
-    `${link}?client_reference_id=${encodeURIComponent(nonce)}`,
+    `${API_BASE}/checkout?price=${encodeURIComponent(price)}&nonce=${encodeURIComponent(nonce)}`,
     "_blank"
   );
   if (!win) {
