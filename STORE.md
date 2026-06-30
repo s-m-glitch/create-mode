@@ -16,7 +16,9 @@ Rebuild the zip anytime after code changes:
 cd ~/Desktop/time
 rm -f dist/create-mode.zip
 zip -q dist/create-mode.zip manifest.json background.js content.js feed-guard.js \
-  hub.html hub.css hub.js rules.json icons/icon16.png icons/icon48.png icons/icon128.png
+  hub.html hub.css hub.js rules.json \
+  icons/icon16.png icons/icon48.png icons/icon128.png \
+  fonts/switzer-400.woff2 fonts/switzer-500.woff2 fonts/switzer-700.woff2 fonts/switzer-800.woff2
 ```
 
 ## One-time account setup
@@ -100,18 +102,11 @@ zip -q dist/create-mode.zip manifest.json background.js content.js feed-guard.js
   backend with a random, anonymous id to learn whether that payment cleared.
   Payment is handled entirely by Stripe; card data never touches the extension.
   No personal data is sent to our backend.
-- **Remote code?** No executable remote code. The Create Hub also loads the
-  Switzer **web font** from Fontshare (a font resource, not code). If you prefer
-  to remove that external request, the font can be bundled locally — see below.
+- **Remote code?** No. No executable remote code, and **no external requests at
+  all** — the Switzer font is bundled locally (`fonts/`), so the extension works
+  fully offline during normal use.
 
 ---
-
-## Optional hardening before first upload
-
-Bundle the Switzer font locally so the extension makes **no external network
-requests at all** (also works fully offline). Recommended for a published build;
-ask and it can be wired up in a few minutes. Doing it before the first submission
-avoids a second review.
 
 ## Pushing updates later
 

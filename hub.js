@@ -17,9 +17,10 @@ $("post").addEventListener("click", () => (location.href = ROUTES.post));
 $("messages").addEventListener("click", () => (location.href = ROUTES.messages));
 
 // ── Block commitment ──
+const HOUR = 3_600_000;
 const DAY = 86_400_000;
 const DURATIONS = [
-  { label: "5 min", ms: 5 * 60_000, price: 5 }, // TEMP: test option (reuses the $5 link) — remove before real use
+  { label: "1 hour", ms: HOUR, price: 5 }, // shortest tier — same $5 stake as a day
   { label: "1 day", ms: 1 * DAY, price: 5 },
   { label: "1 week", ms: 7 * DAY, price: 10 },
   { label: "2 weeks", ms: 14 * DAY, price: 25 },
@@ -87,6 +88,17 @@ function fmtRemaining(ms) {
   return `${days} day${days === 1 ? "" : "s"}`;
 }
 
+// For sub-day locks a clock time reads clearer than a date.
+function fmtUntil(ts) {
+  if (ts - Date.now() < DAY) {
+    return new Date(ts).toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }
+  return fmtDate(ts);
+}
+
 // Build the duration chips once.
 DURATIONS.forEach((d) => {
   const btn = document.createElement("button");
@@ -131,7 +143,7 @@ function renderPending() {
   }
   const verb = isBlocked(currentBlockUntil) ? "Extend the lock to" : "Lock the feed until";
   els.confirmText.innerHTML =
-    `${verb} <strong>${fmtDate(pending.until)}</strong>. ` +
+    `${verb} <strong>${fmtUntil(pending.until)}</strong>. ` +
     `Breaking early costs <strong>$${pending.price}</strong>.`;
   els.confirm.hidden = false;
 }
@@ -250,8 +262,8 @@ function renderState() {
     els.title.hidden = false;
     els.title.textContent = `${fmtRemaining(currentBlockUntil - Date.now())} left`;
     els.sub.textContent = awaiting
-      ? `Locked until ${fmtDate(currentBlockUntil)}.`
-      : `Locked until ${fmtDate(currentBlockUntil)} — extend below, never shorten.`;
+      ? `Locked until ${fmtUntil(currentBlockUntil)}.`
+      : `Locked until ${fmtUntil(currentBlockUntil)} — extend below, never shorten.`;
   } else {
     els.state.textContent = "Not blocked";
     els.title.hidden = true;

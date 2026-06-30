@@ -1,6 +1,36 @@
 /* hub.css — Create Hub. Light black-and-white: paper background, frosted
    cards, heavy black headline, near-black CTAs. (tomo-derived layout.) */
 
+/* Switzer, bundled locally (no third-party requests). */
+@font-face {
+  font-family: "Switzer";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/switzer-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Switzer";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/switzer-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Switzer";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/switzer-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Switzer";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("fonts/switzer-800.woff2") format("woff2");
+}
+
 :root {
   --paper-1: #e8e8e6; /* upper light gray */
   --paper-2: #f1f1ef;
