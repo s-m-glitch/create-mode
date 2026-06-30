@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "description": "Use LinkedIn to create, don't consume. Blocks the home feed and notifications; keeps posting and messaging fully working.",
 
+  "minimum_chrome_version": "111",
+
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

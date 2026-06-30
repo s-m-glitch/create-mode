@@ -38,8 +38,8 @@
 
   --ink: #131316;
   --ink-dim: rgba(19, 19, 22, 0.66);
-  --ink-faint: rgba(19, 19, 22, 0.46);
-  --ink-mute: rgba(19, 19, 22, 0.3);
+  --ink-faint: rgba(19, 19, 22, 0.58); /* ~4.6:1 on paper — meets WCAG AA */
+  --ink-mute: rgba(19, 19, 22, 0.3); /* decorative only (arrows, dots) */
   --line: rgba(19, 19, 22, 0.12);
 
   --btn: #16161a;
@@ -491,7 +491,7 @@ body {
   padding: 4px;
   font-family: var(--sans);
   font-size: 12.5px;
-  color: var(--ink-mute);
+  color: var(--ink-faint);
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: color 0.18s ease;

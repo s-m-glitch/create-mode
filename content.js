@@ -70,6 +70,13 @@ const COMPOSER_MARKERS = [
 ];
 // ─────────────────────────────────────────────────────────────────────
 
+// Flip to true to surface diagnostic logs in the page console (off in prod so
+// we don't clutter every LinkedIn page or advertise the extension's state).
+const DEBUG = false;
+const log = (...args) => {
+  if (DEBUG) console.info("[Create Mode]", ...args);
+};
+
 const STYLE_ID = "create-mode-hide";
 
 function buildHideCss(config) {
@@ -190,7 +197,7 @@ function stopComposerWatch() {
 }
 
 function leaveForHub() {
-  console.info("[Create Mode] leaving feed → Create Hub");
+  log("leaving feed → Create Hub");
   stopComposerWatch();
   location.replace(HUB_URL);
 }
@@ -217,10 +224,7 @@ window.addEventListener("popstate", evaluate);
 // live. When dormant, leave LinkedIn entirely alone.
 function applyBlocked(blocked) {
   blockedNow = blocked;
-  // Diagnostic: confirms in DevTools whether blocking is actually armed.
-  console.info(
-    `[Create Mode] ${blocked ? "ON — feed blocked" : "off — dormant"} @ ${location.pathname}${location.search}`
-  );
+  log(`${blocked ? "ON — feed blocked" : "off — dormant"} @ ${location.pathname}${location.search}`);
   blocked ? injectStyle() : removeStyle();
   evaluate();
 }

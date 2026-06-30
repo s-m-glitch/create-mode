@@ -5,8 +5,6 @@ const $ = (id) => document.getElementById(id);
 
 // `chrome.storage` is absent in a plain browser preview — degrade gracefully.
 const store = typeof chrome !== "undefined" && chrome.storage ? chrome.storage : null;
-const extUrl = (p) =>
-  typeof chrome !== "undefined" && chrome.runtime ? chrome.runtime.getURL(p) : p;
 
 // ── Create tools: plain routes, no DOM scraping ──
 const ROUTES = {
@@ -28,9 +26,7 @@ const DURATIONS = [
 ];
 
 // ── Pay-to-break configuration ──
-// While API_BASE is empty we run in MOCK mode: a fake checkout page marks the
-// payment "paid" so the flow is clickable without a backend. Set API_BASE to
-// the deployed backend to go live — the Payment Links below are already wired.
+// Backend that records paid breaks (Stripe webhook → KV) and answers /status.
 const API_BASE = "https://create-mode-api.vercel.app/api";
 
 // Stripe Payment Links (LIVE mode), keyed by break price (USD).
@@ -40,7 +36,6 @@ const PAYMENT_LINKS = {
   25: "https://buy.stripe.com/28E00d5LAaUV2bUgWmdfG02",
   100: "https://buy.stripe.com/00waER6PE1kldUC5dEdfG03",
 };
-const MOCK = !API_BASE;
 
 const els = {
   commit: $("commit"),
@@ -90,13 +85,18 @@ function fmtRemaining(ms) {
   return `${days} day${days === 1 ? "" : "s"}`;
 }
 
-// For sub-day locks a clock time reads clearer than a date.
+// For sub-day locks a clock time reads clearer than a date — but a bare time
+// is ambiguous if it lands on a different calendar day (e.g. an 11pm + 1hr lock
+// ending at 12:40 AM "tomorrow"), so qualify it when the day differs.
 function fmtUntil(ts) {
-  if (ts - Date.now() < DAY) {
-    return new Date(ts).toLocaleTimeString(undefined, {
+  const now = new Date();
+  const target = new Date(ts);
+  if (ts - now.getTime() < DAY) {
+    const time = target.toLocaleTimeString(undefined, {
       hour: "numeric",
       minute: "2-digit",
     });
+    return target.getDate() === now.getDate() ? time : `${time} tomorrow`;
   }
   return fmtDate(ts);
 }
@@ -171,34 +171,38 @@ els.breakStay.addEventListener("click", () => {
 els.breakPay.addEventListener("click", () => beginBreak(currentBreakPrice));
 els.breakCancel.addEventListener("click", cancelBreak);
 
-// Opens checkout; returns false if no payment link is configured for this tier
-// (e.g. the $1 test chip in live mode), so we don't launch a broken tab.
+// Opens Stripe checkout for this tier. Returns false if there's no link for the
+// price or the browser blocked the pop-up, so we don't enter "awaiting" with no
+// checkout actually open.
 function openCheckout(price, nonce) {
-  if (MOCK) {
-    window.open(`${extUrl("mock-pay.html")}?nonce=${encodeURIComponent(nonce)}&price=${price}`, "_blank");
-    return true;
-  }
   const link = PAYMENT_LINKS[price];
   if (!link) {
     console.warn(`[Create Mode] no payment link configured for $${price}`);
     return false;
   }
-  window.open(`${link}?client_reference_id=${encodeURIComponent(nonce)}`, "_blank");
+  const win = window.open(
+    `${link}?client_reference_id=${encodeURIComponent(nonce)}`,
+    "_blank"
+  );
+  if (!win) {
+    alert("Couldn't open the checkout — please allow pop-ups for this page and try again.");
+    return false;
+  }
   return true;
 }
 
+// Polls the backend for this nonce's paid status, with a timeout so a hung
+// request can't block the next poll (we also guard against overlap upstream).
 function paymentStatus(nonce) {
-  if (MOCK) {
-    return new Promise((resolve) => {
-      if (!store) return resolve(false);
-      const key = `paid:${nonce}`;
-      store.local.get(key, (o) => resolve(!!o[key]));
-    });
-  }
-  return fetch(`${API_BASE}/status?nonce=${encodeURIComponent(nonce)}`)
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+  return fetch(`${API_BASE}/status?nonce=${encodeURIComponent(nonce)}`, {
+    signal: ctrl.signal,
+  })
     .then((r) => r.json())
     .then((d) => !!d.paid)
-    .catch(() => false);
+    .catch(() => false)
+    .finally(() => clearTimeout(timer));
 }
 
 function beginBreak(price) {
